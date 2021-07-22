@@ -36,13 +36,13 @@ client.on('message', async msg => {
               console.log('チャンネル作成中…');
               // カテゴリーを登録する
               let parent = msg.guild.channels.cache.find(
-                channel => channel.name.toLowerCase() === "作成されたチャンネル"
+                channel => channel.name.toLowerCase() === "各種カテゴリチャンネル"
               )
               if ( parent ) {
                 ch.setParent( parent );
               }
               const genre = isVoice === "text" ? "テキスト": "音声"
-              msg.channel.send(`${genre}チャンネル #${chName} を『作成されたチャンネル』内に作ったよ！`)
+              msg.channel.send(`${genre}チャンネル #${chName} を『各種カテゴリチャンネル』内に作ったよ！`)
             })
             .catch( (err) => { console.log( err ); } );
         }else{
@@ -51,6 +51,26 @@ client.on('message', async msg => {
       }else{
         const usage = `USAGE:\n\`\`\`!channel チャンネル名 (-v or --voice)\`\`\``
         msg.channel.send(usage)
+      }
+    }
+  }else if(msg.channel.id === process.env.BOT_MAINTENANCE){
+    // メッセージ送信
+
+    // コマンドとメッセージを分ける
+    // メッセージはコードブロック内
+    let arg = msg.content.split( /\`{3}/ )
+    let cmd = arg.shift()
+    let announce = arg[0]
+
+    let cmdReg = new RegExp(/^\!channel_msg/g)
+
+    if(cmdReg.test(cmd)){
+      // アナウンスへメッセージ送信
+      console.log("送信", announce)
+      if(announce){
+        client.channels.cache.get(process.env.ANNOUNCE).send(announce)
+      }else{
+        client.channels.cache.get(process.env.BOT_MAINTENANCE).send("空文字もしくは`null`が渡されました")
       }
     }
   }
